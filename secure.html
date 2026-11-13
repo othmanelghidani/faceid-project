@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Espace sécurisé – FaceX</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+  <style>
+    html,body{
+      min-height:100%;
+      margin:0;
+      color:#e5e7eb;
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(124, 58, 237, 0.2) 0%, transparent 70%),
+        radial-gradient(circle at 20% 80%, rgba(56, 189, 248, 0.15) 0%, transparent 40%),
+        radial-gradient(circle at 80% 20%, rgba(192, 132, 252, 0.1) 0%, transparent 40%),
+        linear-gradient(180deg, #0a0015 0%, #050008 40%, #000 100%);
+      overflow-x: hidden;
+    }
+
+    /* EFFET DE GRID FUTURISTE */
+    .grid-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(124, 58, 237, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(124, 58, 237, 0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
+      pointer-events: none;
+      z-index: 0;
+      animation: grid-move 30s linear infinite;
+      mask-image: radial-gradient(circle at center, black 20%, transparent 80%);
+    }
+
+    @keyframes grid-move {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(50px, 50px); }
+    }
+
+    /* Glass container futuriste */
+    .glass{
+      background: rgba(15, 23, 42, 0.35);
+      backdrop-filter: blur(25px) saturate(180%);
+      border: 1px solid rgba(124, 58, 237, 0.3);
+      box-shadow: 
+        0 25px 70px rgba(0, 0, 0, 0.7),
+        0 0 120px rgba(124, 58, 237, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        inset 0 0 60px rgba(56, 189, 248, 0.08);
+      position: relative;
+      z-index: 2;
+      overflow: hidden;
+    }
+
+    .glass::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, 
+        transparent, 
+        rgba(124, 58, 237, 0.6), 
+        rgba(56, 189, 248, 0.6), 
+        transparent
+      );
+      z-index: 1;
+    }
+
+    /* Effet de scan sur la carte */
+    .glass::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(90deg, 
+        transparent, 
+        rgba(255, 255, 255, 0.08), 
+        transparent
+      );
+      animation: scan 8s ease-in-out infinite;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    @keyframes scan {
+      0% { left: -100%; }
+      100% { left: 200%; }
+    }
+
+    /* Glow title amélioré */
+    .glow{
+      text-shadow:
+        0 0 35px rgba(124,58,237,.9),
+        0 0 70px rgba(124,58,237,.6),
+        0 0 100px rgba(56,189,248,.3);
+      background: linear-gradient(135deg, #c4b5fd, #38bdf8, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      position: relative;
+    }
+
+    /* Buttons futuristes */
+    .space-btn{
+      background: linear-gradient(135deg, rgba(124,58,237,0.2), rgba(56,189,248,0.2));
+      border: 1px solid rgba(124,58,237,0.6);
+      color: #e9d5ff;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+      backdrop-filter: blur(10px);
+    }
+
+    .space-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+      transition: left 0.6s ease;
+      z-index: -1;
+    }
+
+    .space-btn:hover::before {
+      left: 100%;
+    }
+
+    .space-btn:hover{
+      background: linear-gradient(135deg, #7c3aed, #38bdf8);
+      color: #020617;
+      border-color: transparent;
+      transform: translateY(-4px);
+      box-shadow: 
+        0 12px 40px rgba(56, 189, 248, 0.6),
+        0 0 80px rgba(56, 189, 248, 0.4);
+    }
+
+    /* Danger button futuriste */
+    .danger-btn{
+      background: linear-gradient(135deg, rgba(239,68,68,0.2), rgba(220,38,38,0.2));
+      border: 1px solid rgba(239,68,68,0.6);
+      color: #fecaca;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+      backdrop-filter: blur(10px);
+    }
+
+    .danger-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+      transition: left 0.6s ease;
+      z-index: -1;
+    }
+
+    .danger-btn:hover::before {
+      left: 100%;
+    }
+
+    .danger-btn:hover{
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: #020617;
+      border-color: transparent;
+      transform: translateY(-4px);
+      box-shadow: 
+        0 12px 40px rgba(239, 68, 68, 0.6),
+        0 0 80px rgba(239, 68, 68, 0.4);
+    }
+
+    /* ===== INPUT FILE FUTURISTE AMÉLIORÉ ===== */
+    .space-file{
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(124, 58, 237, 0.5);
+      color: #f8fafc;
+      border-radius: 14px;
+      padding: 12px 16px;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+      font-weight: 300;
+      letter-spacing: 0.5px;
+    }
+
+    .space-file:hover {
+      border-color: rgba(56, 189, 248, 0.7);
+      box-shadow: 0 0 30px rgba(56, 189, 248, 0.2);
+    }
+
+    .space-file:focus {
+      outline: none;
+      border-color: rgba(56, 189, 248, 0.9);
+      box-shadow: 
+        0 0 0 3px rgba(56, 189, 248, 0.2),
+        0 0 40px rgba(56, 189, 248, 0.3);
+    }
+
+    .space-file::file-selector-button{
+      background: linear-gradient(135deg, #7c3aed, #38bdf8);
+      border: none;
+      color: #020617;
+      padding: 12px 24px;
+      margin-right: 16px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 0 30px rgba(56, 189, 248, 0.5);
+      letter-spacing: 0.5px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .space-file::file-selector-button:hover{
+      background: linear-gradient(135deg, #38bdf8, #7c3aed);
+      transform: translateY(-2px);
+      box-shadow: 
+        0 0 50px rgba(56, 189, 248, 0.7),
+        0 0 80px rgba(56, 189, 248, 0.4);
+    }
+
+    /* Table futuriste */
+    table {
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+
+    table th{
+      background: rgba(15, 23, 42, 0.8);
+      color: #c4b5fd;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid rgba(124, 58, 237, 0.3);
+      backdrop-filter: blur(10px);
+      text-transform: uppercase;
+      font-size: 0.875rem;
+    }
+
+    table td {
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      transition: all 0.2s ease;
+    }
+
+    table tbody tr{
+      background: rgba(15, 23, 42, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    table tbody tr:hover{
+      background: rgba(124, 58, 237, 0.15);
+      transform: translateX(4px);
+      box-shadow: 
+        inset 4px 0 0 rgba(56, 189, 248, 0.6),
+        0 0 30px rgba(124, 58, 237, 0.1);
+    }
+
+    /* HR stylisé */
+    hr {
+      border: none;
+      height: 1px;
+      background: linear-gradient(90deg, 
+        transparent, 
+        rgba(124, 58, 237, 0.3), 
+        rgba(56, 189, 248, 0.5), 
+        rgba(124, 58, 237, 0.3), 
+        transparent
+      );
+      margin: 2rem 0;
+    }
+
+    /* Status messages - PAS DE RECTANGLE VIDES */
+    #storageStatus, #welcomeText {
+      background: rgba(15, 23, 42, 0.4);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(124, 58, 237, 0.2);
+      border-radius: 0.75rem;
+      padding: 0;
+      margin: 0;
+      font-size: 0.9rem;
+      color: rgba(229, 231, 235, 0.9);
+      transition: all 0.3s ease;
+      min-height: 0;
+      display: block;
+    }
+
+    #welcomeText {
+      padding: 0.9rem 1.2rem;
+      margin-top: 0.5rem;
+    }
+
+    #storageStatus:not(:empty) {
+      padding: 0.9rem 1.2rem;
+      margin-top: 0.75rem;
+      animation: status-pulse 3s infinite alternate;
+      display: block;
+    }
+
+    @keyframes status-pulse {
+      0% { 
+        border-color: rgba(124, 58, 237, 0.2);
+        box-shadow: 0 0 20px rgba(124, 58, 237, 0.1);
+      }
+      100% { 
+        border-color: rgba(56, 189, 248, 0.4);
+        box-shadow: 0 0 30px rgba(56, 189, 248, 0.2);
+      }
+    }
+
+    /* BOUTONS ALIGNÉS DANS LE TABLEAU */
+    .table-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 1rem;
+    }
+
+    .table-btn {
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      min-width: 100px;
+      justify-content: center;
+    }
+
+    .table-btn-open {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(124, 58, 237, 0.2));
+      border: 1px solid rgba(56, 189, 248, 0.5);
+      color: #7dd3fc;
+    }
+
+    .table-btn-open:hover {
+      background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+      color: #020617;
+      border-color: transparent;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(56, 189, 248, 0.4);
+    }
+
+    .table-btn-delete {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.2));
+      border: 1px solid rgba(239, 68, 68, 0.5);
+      color: #f87171;
+    }
+
+    .table-btn-delete:hover {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: #020617;
+      border-color: transparent;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(239, 68, 68, 0.4);
+    }
+
+    /* Animation d'entrée */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .glass {
+      animation: fadeInUp 0.6s ease-out;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .glass {
+        padding: 1.5rem !important;
+        margin: 1rem;
+        border-radius: 1.5rem !important;
+      }
+      
+      .flex-col.md\:flex-row {
+        flex-direction: column;
+      }
+      
+      table th, table td {
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+      }
+      
+      h1.text-3xl {
+        font-size: 2rem !important;
+      }
+      
+      .table-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      
+      .table-btn {
+        min-width: 80px;
+        width: 100%;
+      }
+    }
+
+    /* Particules légères */
+    .particle {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0;
+      animation: particle-float 20s infinite linear;
+    }
+
+    @keyframes particle-float {
+      0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.05; }
+      90% { opacity: 0.05; }
+      100% { transform: translateY(-100vh) translateX(100px) rotate(360deg); opacity: 0; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- GRID FUTURISTE -->
+  <div class="grid-overlay"></div>
+  
+  <!-- PARTICULES -->
+  <div id="particles-container"></div>
+
+  <!-- MENU -->
+  <div id="menu"></div>
+
+  <!-- CONTENU -->
+  <div class="flex items-center justify-center py-14 px-4">
+    <div class="glass max-w-5xl w-full rounded-3xl p-10 space-y-10">
+
+      <!-- HEADER -->
+      <header class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+        <div class="flex items-center gap-4">
+          <div class="relative">
+            <div class="absolute inset-0 bg-purple-500/20 blur-md rounded-full"></div>
+            <i class="bi bi-shield-lock text-3xl relative z-10 text-purple-300"></i>
+          </div>
+          <div>
+            <h1 class="text-3xl font-extrabold glow">
+              Espace sécurisé FaceX
+            </h1>
+            <p id="welcomeText" class="text-gray-300 text-sm mt-2 flex items-center gap-2">
+              <i class="bi bi-person-check text-purple-400"></i>
+              <span id="welcomeTextContent">Chargement...</span>
+            </p>
+          </div>
+        </div>
+
+        <button id="logoutBtn"
+          class="danger-btn px-6 py-3 text-sm font-semibold rounded-xl flex items-center justify-center gap-2">
+          <i class="bi bi-box-arrow-right"></i>
+          <span>Déconnexion</span>
+        </button>
+      </header>
+
+      <hr />
+
+      <!-- STOCKAGE -->
+      <section class="space-y-8">
+        <div class="flex items-center gap-3">
+          <i class="bi bi-folder2-open text-2xl text-purple-400"></i>
+          <h2 class="text-2xl font-semibold text-purple-200">
+            Espace de stockage sécurisé
+          </h2>
+        </div>
+
+        <!-- Upload -->
+        <div class="flex flex-col md:flex-row gap-4">
+          <input id="fileInput"
+                 type="file"
+                 multiple
+                 class="space-file flex-1" />
+
+          <button id="uploadBtn"
+            class="space-btn px-8 py-3 rounded-xl font-semibold flex items-center justify-center gap-2">
+            <i class="bi bi-cloud-upload"></i>
+            <span>Uploader</span>
+          </button>
+        </div>
+
+        <!-- Pas de rectangle vide avant le tableau -->
+        <p id="storageStatus" class="text-sm"></p>
+
+        <!-- Liste fichiers -->
+        <div class="overflow-x-auto rounded-xl border border-white/10 backdrop-blur-sm mt-6">
+          <table class="min-w-full text-sm">
+            <thead class="bg-white/5">
+              <tr>
+                <th class="px-4 py-3 text-left">Nom</th>
+                <th class="px-4 py-3 text-left">Taille</th>
+                <th class="px-4 py-3 text-left">Date</th>
+                <th class="px-4 py-3 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="filesTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- INDICATEUR DE SYSTÈME -->
+      <div class="mt-8 flex items-center justify-center gap-4 text-xs text-gray-400">
+        <div class="flex items-center gap-1.5">
+          <div class="w-2 h-2 rounded-full bg-gradient-to-r from-green-400 to-emerald-500 animate-pulse"></div>
+          <span class="font-mono tracking-wide">STORAGE: ONLINE</span>
+        </div>
+        <div class="h-4 w-px bg-gradient-to-b from-transparent via-purple-500/30 to-transparent"></div>
+        <div class="flex items-center gap-1.5">
+          <div class="w-2 h-2 rounded-full bg-gradient-to-r from-blue-400 to-cyan-500"></div>
+          <span class="font-mono tracking-wide">ENCRYPTION: ACTIVE</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPT POUR LES EFFETS VISUELS -->
+  <script>
+    // Création de particules légères
+    function createParticles() {
+      const container = document.getElementById('particles-container');
+      const colors = [
+        'rgba(124, 58, 237, 0.04)',
+        'rgba(56, 189, 248, 0.04)',
+        'rgba(192, 132, 252, 0.04)'
+      ];
+      
+      for (let i = 0; i < 10; i++) {
+        const particle = document.createElement('div');
+        particle.classList.add('particle');
+        
+        const size = Math.random() * 50 + 30;
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const duration = Math.random() * 15 + 20;
+        const delay = Math.random() * 10;
+        
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        particle.style.left = `${Math.random() * 100}%`;
+        particle.style.top = `${Math.random() * 100}%`;
+        particle.style.background = `radial-gradient(circle, ${color}, transparent 70%)`;
+        particle.style.animationDuration = `${duration}s`;
+        particle.style.animationDelay = `${delay}s`;
+        
+        container.appendChild(particle);
+      }
+    }
+
+    // Initialisation des effets visuels
+    document.addEventListener('DOMContentLoaded', function() {
+      createParticles();
+      
+      // Animation des indicateurs système
+      setInterval(() => {
+        const indicators = document.querySelectorAll('.animate-pulse');
+        indicators.forEach(ind => {
+          ind.style.animation = 'pulse 2s infinite';
+        });
+      }, 1000);
+      
+      // Effet de hover sur les boutons
+      const buttons = document.querySelectorAll('.space-btn, .danger-btn, .table-btn');
+      buttons.forEach(btn => {
+        btn.addEventListener('mouseenter', function() {
+          if (this.classList.contains('table-btn')) {
+            this.style.transform = 'translateY(-2px)';
+          } else {
+            this.style.transform = 'translateY(-4px)';
+          }
+        });
+        
+        btn.addEventListener('mouseleave', function() {
+          this.style.transform = 'translateY(0)';
+        });
+      });
+    });
+  </script>
+
+  <!-- JS STRICTEMENT INCHANGÉ MAIS AMÉLIORÉ POUR LES BOUTONS -->
+  <script>
+    const API_BASE = "http://127.0.0.1:8000";
+    let authenticatedUserId = null;
+    let authenticatedDisplayName = null;
+
+    fetch("menu.html")
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById("menu").innerHTML = html;
+        initSecurePage();
+      })
+      .catch(() => initSecurePage());
+
+    function initSecurePage() {
+      authenticatedUserId = localStorage.getItem("authenticatedUserId");
+      authenticatedDisplayName = localStorage.getItem("authenticatedDisplayName");
+
+      if (!authenticatedUserId || !authenticatedDisplayName) {
+        window.location.href = "index.html";
+        return;
+      }
+
+      document.getElementById("welcomeTextContent").textContent =
+        `Bienvenue ${authenticatedDisplayName} – accès sécurisé par reconnaissance faciale.`;
+
+      document.getElementById("logoutBtn").onclick = () => {
+        localStorage.removeItem("authenticatedUserId");
+        localStorage.removeItem("authenticatedDisplayName");
+        window.location.href = "index.html";
+      };
+
+      refreshFilesList();
+      document.getElementById("uploadBtn").onclick = uploadFiles;
+    }
+
+    async function refreshFilesList() {
+      const tbody = document.getElementById("filesTableBody");
+      const status = document.getElementById("storageStatus");
+
+      tbody.innerHTML = "";
+      status.textContent = "Chargement des fichiers...";
+
+      try {
+        const res = await fetch(`${API_BASE}/users/${authenticatedUserId}/files`);
+        const files = await res.json();
+
+        if (!files.length) {
+          tbody.innerHTML =
+            `<tr><td colspan="4" class="p-6 text-gray-400 text-center">
+              <i class="bi bi-folder-x text-2xl mb-2 block"></i>
+              Aucun fichier dans votre espace sécurisé.
+            </td></tr>`;
+          status.textContent = "";
+          return;
+        }
+
+        for (const f of files) {
+          tbody.innerHTML += `
+            <tr>
+              <td class="px-4 py-3 break-all">
+                <i class="bi bi-file-earmark-text text-purple-400 mr-2"></i>
+                ${f.filename}
+              </td>
+              <td class="px-4 py-3">${(f.size / 1024).toFixed(1)} KB</td>
+              <td class="px-4 py-3">${new Date(f.created_at).toLocaleString()}</td>
+              <td class="px-4 py-3">
+                <div class="table-actions">
+                  <a href="${API_BASE}/users/${authenticatedUserId}/files/${encodeURIComponent(f.filename)}"
+                     target="_blank"
+                     class="table-btn table-btn-open">
+                    <i class="bi bi-eye"></i>
+                    Ouvrir
+                  </a>
+                  <button onclick="deleteFile('${f.filename}')"
+                    class="table-btn table-btn-delete">
+                    <i class="bi bi-trash"></i>
+                    Supprimer
+                  </button>
+                </div>
+              </td>
+            </tr>`;
+        }
+
+        status.textContent = "";
+      } catch (e) {
+        console.error(e);
+        status.textContent = "Erreur lors du chargement des fichiers.";
+      }
+    }
+
+    async function uploadFiles() {
+      const files = document.getElementById("fileInput").files;
+      if (!files.length) return;
+
+      document.getElementById("storageStatus").textContent = "Upload en cours...";
+
+      for (const f of files) {
+        const fd = new FormData();
+        fd.append("file", f);
+        await fetch(`${API_BASE}/users/${authenticatedUserId}/files`, {
+          method: "POST",
+          body: fd
+        });
+      }
+
+      document.getElementById("fileInput").value = "";
+      refreshFilesList();
+    }
+
+    async function deleteFile(filename) {
+      if (!confirm(`Supprimer "${filename}" ?`)) return;
+
+      await fetch(
+        `${API_BASE}/users/${authenticatedUserId}/files/${encodeURIComponent(filename)}`,
+        { method: "DELETE" }
+      );
+
+      refreshFilesList();
+    }
+  </script>
+
+</body>
+</html>

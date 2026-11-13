@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Connexion Admin – FaceX</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    html,body{
+      min-height:100%;
+      margin:0;
+      color:#e5e7eb;
+      background:
+        radial-gradient(circle at 50% 20%, #3b0764 0%, #1e0133 40%, #050008 75%, #000 100%);
+      overflow:hidden;
+    }
+
+    /* GRID */
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      background:
+        linear-gradient(rgba(124,58,237,.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(124,58,237,.05) 1px, transparent 1px);
+      background-size:70px 70px;
+      mask-image:radial-gradient(circle at center, black 45%, transparent 80%);
+      pointer-events:none;
+    }
+
+    /* CARD */
+    .holo{
+      position:relative;
+      background:
+        linear-gradient(145deg,
+          rgba(124,58,237,.2),
+          rgba(56,189,248,.08),
+          rgba(0,0,0,.65));
+      backdrop-filter:blur(24px);
+      border:1px solid rgba(255,255,255,.15);
+      border-radius:28px;
+      box-shadow:
+        0 0 140px rgba(124,58,237,.4),
+        inset 0 0 80px rgba(56,189,248,.12);
+      overflow:hidden;
+    }
+
+    .holo::before{
+      content:"";
+      position:absolute;
+      inset:-60%;
+      background:conic-gradient(
+        from 0deg,
+        transparent,
+        rgba(56,189,248,.45),
+        transparent,
+        rgba(124,58,237,.55),
+        transparent
+      );
+      animation:spin 18s linear infinite;
+      opacity:.3;
+    }
+
+    @keyframes spin{ to{transform:rotate(360deg);} }
+
+    .content{position:relative;z-index:2}
+
+    /* TITLE */
+    .glow{
+      text-shadow:
+        0 0 28px rgba(124,58,237,.9),
+        0 0 70px rgba(56,189,248,.45);
+    }
+
+    /* INPUTS – DARK GLASS */
+    .neo-input{
+      background:
+        linear-gradient(
+          135deg,
+          rgba(124,58,237,.18),
+          rgba(0,0,0,.75)
+        );
+      border:1px solid rgba(124,58,237,.65);
+      color:#e5e7eb;
+      transition:.35s ease;
+    }
+
+    .neo-input::placeholder{
+      color:rgba(229,231,235,.55);
+    }
+
+    .neo-input:focus{
+      outline:none;
+      border-color:#38bdf8;
+      box-shadow:0 0 30px rgba(56,189,248,.7);
+      background:
+        linear-gradient(
+          135deg,
+          rgba(56,189,248,.18),
+          rgba(0,0,0,.85)
+        );
+    }
+
+    /* BUTTON */
+    .space-btn{
+      background:rgba(124,58,237,.25);
+      border:1px solid rgba(124,58,237,.85);
+      color:#e9d5ff;
+      transition:.45s cubic-bezier(.2,.8,.2,1);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .space-btn::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(
+        120deg,
+        transparent 25%,
+        rgba(255,255,255,.35),
+        transparent 75%
+      );
+      transform:translateX(-120%);
+      transition:.6s;
+    }
+
+    .space-btn:hover::after{
+      transform:translateX(120%);
+    }
+
+    .space-btn:hover{
+      background:#38bdf8;
+      color:#020617;
+      box-shadow:0 0 55px #38bdf8;
+      transform:translateY(-4px) scale(1.02);
+    }
+
+    #error{
+      text-shadow:0 0 14px rgba(239,68,68,.85);
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- MENU -->
+<div id="menu"></div>
+
+<div class="min-h-screen flex items-center justify-center px-4">
+
+  <div class="holo w-full max-w-md p-10">
+    <div class="content">
+
+      <h1 class="text-3xl font-extrabold text-purple-300 glow text-center mb-8">
+        🛡️ Accès Administrateur
+      </h1>
+
+      <div class="space-y-5">
+        <input
+          id="adminLogin"
+          type="email"
+          placeholder="Email administrateur"
+          class="neo-input w-full px-4 py-3 rounded-xl" />
+
+        <input
+          id="adminPassword"
+          type="password"
+          placeholder="Mot de passe"
+          class="neo-input w-full px-4 py-3 rounded-xl" />
+
+        <button
+          id="loginBtn"
+          class="space-btn w-full py-3 rounded-xl font-semibold text-lg">
+          Se connecter
+        </button>
+
+        <p id="error"
+           class="text-red-500 text-sm text-center"></p>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- LOGIQUE STRICTEMENT INCHANGÉE -->
+<script>
+  fetch("menu.html")
+    .then(res => res.text())
+    .then(html => {
+      document.getElementById("menu").innerHTML = html;
+    });
+
+  const ADMIN_LOGIN = "admin@example.com"; // demo only: change before use
+  const ADMIN_PASSWORD = "change-me"; // demo only: client-side check, not real security
+
+  document.getElementById("loginBtn").onclick = () => {
+    const login = document.getElementById("adminLogin").value.trim();
+    const pwd = document.getElementById("adminPassword").value.trim();
+
+    if (login === ADMIN_LOGIN && pwd === ADMIN_PASSWORD) {
+      localStorage.setItem("adminAuthenticated", "true");
+      window.location.href = "admin.html";
+    } else {
+      document.getElementById("error").textContent =
+        "Email ou mot de passe incorrect";
+    }
+  };
+</script>
+
+</body>
+</html>

@@ -1,0 +1,24 @@
+# Python
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+# Runtime data: uploaded and decrypted user files, databases
+faceid_backend/user_files/
+user_files/
+*.db
+*.enc
+
+# Secrets
+.env
+.env.*
+
+# Editors / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Presentation material (not part of the code)
+*.pptx

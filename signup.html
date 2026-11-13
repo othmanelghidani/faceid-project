@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Inscription – FaceX</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+  <style>
+    html,body{
+      min-height:100%;
+      margin:0;
+      color:#e5e7eb;
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(124, 58, 237, 0.2) 0%, transparent 70%),
+        radial-gradient(circle at 20% 80%, rgba(56, 189, 248, 0.15) 0%, transparent 40%),
+        radial-gradient(circle at 80% 20%, rgba(192, 132, 252, 0.1) 0%, transparent 40%),
+        linear-gradient(180deg, #0a0015 0%, #050008 40%, #000 100%);
+      overflow-x: hidden;
+    }
+
+    /* EFFET D'ÉTOILES DYNAMIQUES */
+    .stars-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .star {
+      position: absolute;
+      background: white;
+      border-radius: 50%;
+      animation: twinkle 3s infinite alternate;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.2; }
+      50% { opacity: 1; }
+    }
+
+    /* EFFET DE GRID FUTURISTE */
+    .grid-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(124, 58, 237, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(124, 58, 237, 0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+      animation: grid-move 20s linear infinite;
+      mask-image: radial-gradient(circle at center, black 30%, transparent 70%);
+    }
+
+    @keyframes grid-move {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(60px, 60px); }
+    }
+
+    /* Glass card amélioré */
+    .glass{
+      background: rgba(15, 23, 42, 0.4);
+      backdrop-filter: blur(25px) saturate(180%);
+      border: 1px solid rgba(124, 58, 237, 0.3);
+      box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.6),
+        0 0 100px rgba(124, 58, 237, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      position: relative;
+      z-index: 2;
+      overflow: hidden;
+    }
+
+    .glass::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, 
+        transparent, 
+        rgba(124, 58, 237, 0.5), 
+        rgba(56, 189, 248, 0.5), 
+        transparent
+      );
+      z-index: 1;
+    }
+
+    /* Glow title amélioré */
+    .glow{
+      text-shadow:
+        0 0 30px rgba(124,58,237,.9),
+        0 0 60px rgba(124,58,237,.6),
+        0 0 90px rgba(56,189,248,.3);
+      background: linear-gradient(135deg, #c4b5fd, #38bdf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      position: relative;
+    }
+
+    .glow::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #7c3aed, #38bdf8, transparent);
+      border-radius: 2px;
+    }
+
+    /* Base button amélioré */
+    .space-btn{
+      background: linear-gradient(135deg, rgba(124,58,237,0.2), rgba(56,189,248,0.2));
+      border: 1px solid rgba(124,58,237,0.6);
+      color: #e9d5ff;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .space-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      transition: left 0.7s ease;
+      z-index: -1;
+    }
+
+    /* 🟢 START CAMERA amélioré */
+    .start-btn:hover{
+      background: linear-gradient(135deg, #22c55e, #10b981);
+      color: #020617;
+      border-color: #22c55e;
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 
+        0 10px 30px rgba(34, 197, 94, 0.5),
+        0 0 60px rgba(34, 197, 94, 0.3);
+    }
+
+    .start-btn:hover::before {
+      left: 100%;
+    }
+
+    /* 🔴 STOP CAMERA amélioré */
+    .stop-btn:hover{
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: #020617;
+      border-color: #ef4444;
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 
+        0 10px 30px rgba(239, 68, 68, 0.5),
+        0 0 60px rgba(239, 68, 68, 0.3);
+    }
+
+    .stop-btn:hover::before {
+      left: 100%;
+    }
+
+    /* Inputs améliorés */
+    .space-input{
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(124, 58, 237, 0.4);
+      color: #f8fafc;
+      font-weight: 300;
+      letter-spacing: 0.5px;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .space-input::placeholder{
+      color: rgba(229,231,235,.4);
+      font-weight: 300;
+    }
+
+    .space-input:focus{
+      outline: none;
+      border-color: #38bdf8;
+      box-shadow: 
+        0 0 0 3px rgba(56,189,248,.2),
+        0 0 30px rgba(56,189,248,.2);
+      background: rgba(15, 23, 42, 0.8);
+      transform: translateY(-2px);
+    }
+
+    /* SAVE BUTTON amélioré */
+    #saveFaceBtn {
+      background: linear-gradient(135deg, rgba(124,58,237,0.3), rgba(56,189,248,0.3));
+      position: relative;
+      overflow: hidden;
+    }
+
+    #saveFaceBtn::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      transform: rotate(45deg);
+      transition: all 0.6s ease;
+      opacity: 0;
+    }
+
+    #saveFaceBtn:hover {
+      background: linear-gradient(135deg, #7c3aed, #38bdf8);
+      color: white;
+      border-color: transparent;
+      transform: translateY(-3px);
+      box-shadow: 
+        0 15px 40px rgba(124, 58, 237, 0.5),
+        0 0 80px rgba(56, 189, 248, 0.4);
+    }
+
+    #saveFaceBtn:hover::after {
+      opacity: 1;
+      transform: rotate(45deg) translate(50%, 50%);
+    }
+
+    /* Video container amélioré */
+    #video {
+      background: rgba(0, 0, 0, 0.8);
+      border: 2px solid rgba(124, 58, 237, 0.3);
+      box-shadow: 
+        0 10px 40px rgba(0, 0, 0, 0.5),
+        0 0 50px rgba(124, 58, 237, 0.2),
+        inset 0 0 30px rgba(0, 0, 0, 0.5);
+      transition: all 0.3s ease;
+    }
+
+    #video:hover {
+      border-color: rgba(56, 189, 248, 0.6);
+      box-shadow: 
+        0 15px 50px rgba(0, 0, 0, 0.6),
+        0 0 80px rgba(56, 189, 248, 0.3);
+    }
+
+    /* Status amélioré */
+    #status {
+      background: rgba(15, 23, 42, 0.4);
+      padding: 1rem;
+      border-radius: 0.75rem;
+      border: 1px solid rgba(124, 58, 237, 0.2);
+      backdrop-filter: blur(10px);
+      min-height: 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    #status:not(:empty) {
+      animation: status-pulse 2s infinite alternate;
+    }
+
+    @keyframes status-pulse {
+      0% { border-color: rgba(124, 58, 237, 0.2); }
+      100% { border-color: rgba(56, 189, 248, 0.4); }
+    }
+
+    /* Effet de scan sur la carte */
+    .glass::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+      animation: scan 6s ease-in-out infinite;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    @keyframes scan {
+      0% { left: -100%; }
+      100% { left: 200%; }
+    }
+
+    /* Particules flottantes */
+    .floating-particle {
+      position: fixed;
+      background: rgba(124, 58, 237, 0.1);
+      border-radius: 50%;
+      animation: float 15s infinite linear;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    @keyframes float {
+      0% { transform: translate(0, 0) rotate(0deg); }
+      100% { transform: translate(100px, -100px) rotate(360deg); }
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .glass {
+        padding: 1.5rem !important;
+        margin: 1rem;
+      }
+      
+      .flex.gap-4 {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- EFFETS DE FOND -->
+  <div class="stars-bg" id="stars"></div>
+  <div class="grid-overlay"></div>
+  
+  <!-- PARTICULES FLOTTANTES -->
+  <div id="particles"></div>
+
+  <!-- MENU (inchangé) -->
+  <div id="menu"></div>
+
+  <!-- CONTENT -->
+  <main class="min-h-screen flex items-center justify-center px-4 relative z-10">
+    <div class="glass rounded-3xl p-10 max-w-xl w-full">
+
+      <h2 class="text-4xl font-extrabold text-center mb-10 glow">
+        <i class="bi bi-fingerprint mr-3"></i>Inscription FaceX
+      </h2>
+
+      <!-- VIDEO (ID INCHANGÉ) -->
+      <div class="relative mb-8">
+        <div class="absolute -inset-2 bg-gradient-to-r from-purple-500/20 to-sky-500/20 blur-xl rounded-xl opacity-50"></div>
+        <video id="video"
+               width="480"
+               height="360"
+               autoplay
+               playsinline
+               class="relative bg-black rounded-xl w-full shadow-lg"></video>
+        <div class="absolute top-3 left-3 flex items-center gap-2">
+          <div class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
+          <span class="text-xs text-gray-300 font-mono">LIVE</span>
+        </div>
+      </div>
+
+      <!-- CAMERA BUTTONS (IDS INCHANGÉS) -->
+      <div class="flex gap-4 mb-6">
+        <button id="startCameraBtn"
+                class="space-btn start-btn flex-1 px-4 py-3 rounded-lg font-semibold flex items-center justify-center gap-2">
+          <i class="bi bi-camera-video"></i>
+          <span>Démarrer caméra</span>
+        </button>
+
+        <button id="stopCameraBtn"
+                class="space-btn stop-btn flex-1 px-4 py-3 rounded-lg font-semibold flex items-center justify-center gap-2">
+          <i class="bi bi-camera-video-off"></i>
+          <span>Arrêter caméra</span>
+        </button>
+      </div>
+
+      <!-- NAME INPUT (ID INCHANGÉ) -->
+      <div class="mb-6">
+        <div class="flex items-center gap-2 mb-2 text-gray-300">
+          <i class="bi bi-person-badge"></i>
+          <span class="text-sm font-medium">Identité</span>
+        </div>
+        <input
+          id="personName"
+          type="text"
+          placeholder="Saisissez votre nom ..."
+          class="space-input w-full px-4 py-3 rounded-lg"
+        />
+      </div>
+
+      <!-- SAVE BUTTON (ID INCHANGÉ) -->
+      <button id="saveFaceBtn"
+              class="space-btn w-full px-4 py-4 rounded-lg font-semibold text-lg flex items-center justify-center gap-3 mt-2">
+        <i class="bi bi-save"></i>
+        <span>Enregistrer le visage</span>
+        <i class="bi bi-arrow-right-short text-xl transition-transform group-hover:translate-x-1"></i>
+      </button>
+
+      <!-- STATUS (ID INCHANGÉ) -->
+      <p id="status" class="mt-6 text-sm text-center"></p>
+      
+      <!-- INDICATEUR DE SYSTÈME -->
+      <div class="mt-6 flex items-center justify-center gap-3 text-xs text-gray-400">
+        <div class="flex items-center gap-1">
+          <div class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
+          <span class="font-mono">SYSTEM: READY</span>
+        </div>
+        <div class="h-3 w-px bg-gray-600"></div>
+        <div class="flex items-center gap-1">
+          <div class="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
+          <span class="font-mono">FACE API: LOADED</span>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- SCRIPT (STRICTEMENT INCHANGÉ) -->
+  <script>
+    fetch("menu.html")
+      .then(r => r.text())
+      .then(html => {
+        document.getElementById("menu").innerHTML = html;
+        const s = document.createElement("script");
+        s.src = "script.js";
+        document.body.appendChild(s);
+      });
+  </script>
+
+  <!-- SCRIPT POUR LES EFFETS VISUELS -->
+  <script>
+    // Création des étoiles
+    function createStars() {
+      const starsContainer = document.getElementById('stars');
+      const starCount = 150;
+      
+      for (let i = 0; i < starCount; i++) {
+        const star = document.createElement('div');
+        star.classList.add('star');
+        
+        const size = Math.random() * 2 + 1;
+        star.style.width = `${size}px`;
+        star.style.height = `${size}px`;
+        star.style.left = `${Math.random() * 100}%`;
+        star.style.top = `${Math.random() * 100}%`;
+        star.style.opacity = Math.random() * 0.5 + 0.2;
+        star.style.animationDelay = `${Math.random() * 3}s`;
+        star.style.animationDuration = `${Math.random() * 2 + 2}s`;
+        
+        starsContainer.appendChild(star);
+      }
+    }
+
+    // Création des particules
+    function createParticles() {
+      const particlesContainer = document.getElementById('particles');
+      const particleCount = 20;
+      
+      for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.classList.add('floating-particle');
+        
+        const size = Math.random() * 80 + 40;
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        particle.style.left = `${Math.random() * 100}%`;
+        particle.style.top = `${Math.random() * 100}%`;
+        particle.style.animationDuration = `${Math.random() * 10 + 15}s`;
+        particle.style.animationDelay = `${Math.random() * 5}s`;
+        particle.style.opacity = Math.random() * 0.05 + 0.02;
+        particle.style.background = Math.random() > 0.5 
+          ? 'radial-gradient(circle, rgba(124,58,237,0.1), transparent 70%)'
+          : 'radial-gradient(circle, rgba(56,189,248,0.1), transparent 70%)';
+        
+        particlesContainer.appendChild(particle);
+      }
+    }
+
+    // Effet de pulse sur le bouton Enregistrer
+    document.addEventListener('DOMContentLoaded', () => {
+      createStars();
+      createParticles();
+      
+      const saveBtn = document.getElementById('saveFaceBtn');
+      if (saveBtn) {
+        saveBtn.addEventListener('mouseenter', () => {
+          saveBtn.classList.add('group');
+        });
+        
+        saveBtn.addEventListener('mouseleave', () => {
+          saveBtn.classList.remove('group');
+        });
+      }
+      
+      // Effet sur l'input
+      const nameInput = document.getElementById('personName');
+      if (nameInput) {
+        nameInput.addEventListener('focus', () => {
+          nameInput.parentElement.style.transform = 'translateY(-2px)';
+        });
+        
+        nameInput.addEventListener('blur', () => {
+          nameInput.parentElement.style.transform = 'translateY(0)';
+        });
+      }
+    });
+
+    // Animation de connexion système
+    setInterval(() => {
+      const statusIndicators = document.querySelectorAll('.w-1.5.h-1.5');
+      statusIndicators.forEach(indicator => {
+        if (indicator.classList.contains('bg-green-500')) {
+          indicator.style.animation = 'pulse 2s infinite';
+        }
+      });
+    }, 1000);
+  </script>
+
+</body>
+</html>

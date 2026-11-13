@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin – FaceX</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    html,body{
+      min-height:100%;
+      margin:0;
+      color:#e5e7eb;
+      background:
+        radial-gradient(circle at 50% 20%, #3b0764 0%, #1e0133 40%, #050008 75%, #000 100%);
+      overflow-x:hidden;
+    }
+
+    /* GRID BACKGROUND */
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      background:
+        linear-gradient(rgba(124,58,237,.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(124,58,237,.06) 1px, transparent 1px);
+      background-size:80px 80px;
+      mask-image:radial-gradient(circle at center, black 45%, transparent 85%);
+      pointer-events:none;
+      z-index:0;
+    }
+
+    /* GLASS PANEL */
+    .holo{
+      position:relative;
+      background:
+        linear-gradient(145deg,
+          rgba(124,58,237,.22),
+          rgba(56,189,248,.08),
+          rgba(0,0,0,.65));
+      backdrop-filter:blur(24px);
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:26px;
+      box-shadow:
+        0 0 140px rgba(124,58,237,.45),
+        inset 0 0 90px rgba(56,189,248,.12);
+      overflow:hidden;
+      z-index:1;
+    }
+
+    .holo::before{
+      content:"";
+      position:absolute;
+      inset:-60%;
+      background:conic-gradient(
+        from 0deg,
+        transparent,
+        rgba(56,189,248,.45),
+        transparent,
+        rgba(124,58,237,.55),
+        transparent
+      );
+      animation:spin 20s linear infinite;
+      opacity:.25;
+    }
+
+    @keyframes spin{ to{transform:rotate(360deg);} }
+
+    .content{position:relative;z-index:2}
+
+    /* TITLE */
+    .glow{
+      text-shadow:
+        0 0 28px rgba(124,58,237,.9),
+        0 0 70px rgba(56,189,248,.45);
+    }
+
+    /* BUTTONS */
+    .space-btn{
+      background:rgba(124,58,237,.25);
+      border:1px solid rgba(124,58,237,.85);
+      color:#e9d5ff;
+      transition:.45s cubic-bezier(.2,.8,.2,1);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .space-btn::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(
+        120deg,
+        transparent 25%,
+        rgba(255,255,255,.35),
+        transparent 75%
+      );
+      transform:translateX(-120%);
+      transition:.6s;
+    }
+
+    .space-btn:hover::after{
+      transform:translateX(120%);
+    }
+
+    .space-btn:hover{
+      background:#38bdf8;
+      color:#020617;
+      box-shadow:0 0 60px #38bdf8;
+      transform:translateY(-4px);
+    }
+
+    .danger-btn:hover{
+      background:#ef4444 !important;
+      box-shadow:0 0 55px #ef4444;
+      color:#020617;
+    }
+
+    /* TABLE */
+    table{
+      border-collapse:separate;
+      border-spacing:0;
+    }
+
+    thead{
+      background:rgba(124,58,237,.15);
+    }
+
+    th,td{
+      border-color:rgba(255,255,255,.12) !important;
+      color:#e5e7eb;
+    }
+
+    tbody tr:hover{
+      background:rgba(56,189,248,.08);
+    }
+
+    a{
+      color:#38bdf8;
+    }
+    a:hover{
+      text-shadow:0 0 12px #38bdf8;
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- 🔐 PROTECTION ADMIN (INCHANGÉE) -->
+<script>
+  if (localStorage.getItem("adminAuthenticated") !== "true") {
+    window.location.href = "admin-login.html";
+  }
+</script>
+
+<!-- MENU -->
+<div id="menu"></div>
+
+<!-- CONTENU -->
+<main class="max-w-6xl mx-auto px-4 py-16 relative z-10">
+  <div class="holo p-8">
+    <div class="content">
+
+      <!-- HEADER -->
+      <div class="flex items-center justify-between mb-8">
+        <h2 class="text-3xl font-extrabold text-purple-300 glow">
+          🧠 Dashboard Administrateur
+        </h2>
+
+        <button id="adminLogoutBtn"
+          class="space-btn px-5 py-2 rounded-xl font-semibold">
+          Déconnexion admin
+        </button>
+      </div>
+
+      <button id="clearAllBtn"
+        class="space-btn danger-btn px-5 py-2 rounded-xl mb-6 font-semibold">
+        Supprimer tous les visages
+      </button>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm border rounded-xl overflow-hidden">
+          <thead>
+            <tr>
+              <th class="px-4 py-3 text-left">Nom</th>
+              <th class="px-4 py-3 text-left">Action</th>
+            </tr>
+          </thead>
+          <tbody id="facesTableBody">
+            <!-- rempli par script.js -->
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<!-- MENU + SCRIPT (LOGIQUE INTACTE) -->
+<script>
+  fetch("menu.html")
+    .then(res => res.text())
+    .then(html => {
+      document.getElementById("menu").innerHTML = html;
+
+      const s = document.createElement("script");
+      s.src = "script.js";
+      document.body.appendChild(s);
+    });
+
+  document.getElementById("adminLogoutBtn").onclick = () => {
+    localStorage.removeItem("adminAuthenticated");
+    window.location.href = "admin-login.html";
+  };
+</script>
+
+</body>
+</html>
